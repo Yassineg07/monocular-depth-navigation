@@ -1,0 +1,61 @@
+# ROS 2 Build Artifacts
+ros2_ws/build/
+ros2_ws/install/
+ros2_ws/log/
+**/install/
+**/build/
+**/log/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# C++
+*.o
+*.a
+*.so
+*.dylib
+*.exe
+*.out
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# IDE
+.vscode/
+.amazonq/
+.github/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+*.bag
+*.db3
+
+# TF/Graph visualization files
+*.gv
+*.pdf
+
+# Temporary files
+*.tmp
+*.bak
+*.backup
+
+# Patch files
+*.patch
+
+# Test/debug scripts
+**/test_*.sh
+**/check_*.sh
+monitor_*.sh

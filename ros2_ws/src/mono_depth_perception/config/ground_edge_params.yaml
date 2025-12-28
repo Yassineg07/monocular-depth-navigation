@@ -1,0 +1,11 @@
+ground_edge_node:
+  ros__parameters:
+    camera_topic: "/camera_sensor/image_raw"
+    camera_info_topic: "/camera_sensor/camera_info"
+    
+    ground_edge:
+      roi_ratio: 0.42  # Portion of image height to analyze for ground edge
+      min_edge_strength: 50
+      smoothing_alpha: 0.3
+      camera_height: 0.3
+      depth_scale: 0.60  # Adjust to match real obstacle distance : <1.0 brings line closer, >1.0 pushes it farther.

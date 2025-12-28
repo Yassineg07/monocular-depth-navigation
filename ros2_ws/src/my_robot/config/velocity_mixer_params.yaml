@@ -1,0 +1,35 @@
+velocity_mixer:
+  ros__parameters:
+    # ===== SAFETY MODE =====
+    # BLIND: No perception - minimal motion (0.75mm)
+    # VISION: Depth-based - larger baseline (40-80mm) for monocular depth
+    safety_mode: 'DISABLED'  # DISABLED to turn off micro-motions
+    
+    # ===== BLIND MODE (NON-NEGOTIABLE - DO NOT MODIFY) =====
+    blind_amplitude: 0.005      # m/s
+    blind_duration: 0.15        # seconds
+    blind_pause: 0.1            # seconds
+    blind_cooldown: 10.0        # seconds - mandatory rest
+    blind_stationary_time: 2.0  # seconds - must be idle before pulse
+    
+    # ===== VISION MODE (UPPER BOUNDS) =====
+    # WARNING: VISION mode authorizes real motion
+    # Vision failure = motion abort. BLIND is the only safe fallback.
+    vision_amplitude_max: 0.4          # m/s - tested working (0.4 m/s × 0.1-0.2s)
+    vision_duration_max: 0.2           # seconds
+    vision_displacement_min: 0.04      # meters (40mm minimum baseline)
+    vision_displacement_max: 0.08      # meters (80mm maximum baseline)
+    vision_process_time: 0.5           # seconds - depth processing window
+    vision_allow_recenter: false       # FIX 3: backward motion optional (unsafe without perception)
+    vision_recenter_ratio: 0.5         # 50% backward recenter (only if allow_recenter=true)
+    vision_cooldown: 3.0               # FIX 4: seconds - prevent continuous triggering
+    vision_confidence_threshold: 0.7   # [0-1] minimum confidence
+    vision_min_free_space_ratio: 2.0   # free space must be 2x displacement
+    
+    # ===== TELEOP ARBITRATION (NON-NEGOTIABLE) =====
+    # Human input overrides everything
+    teleop_override_timeout: 1.0  # seconds - suppress micro-motion after teleop
+    
+    # ===== COMMON PARAMETERS =====
+    nav_velocity_threshold: 0.005  # m/s - Nav2 motion detection
+    nav_angular_threshold: 0.01    # rad/s - Nav2 rotation detection

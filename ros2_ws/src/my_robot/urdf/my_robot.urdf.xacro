@@ -1,0 +1,535 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="my_robot">
+
+  <!-- ===================== XACRO ARGUMENTS ===================== -->
+  <xacro:arg name="config_path" default="" />
+  <xacro:property name="config_path" value="$(arg config_path)" />
+
+  <!-- ===================== MATERIAL DEFINITIONS ===================== -->
+  <material name="gray">
+    <color rgba="0.5 0.5 0.5 1"/>
+  </material>
+  <material name="blue">
+    <color rgba="0 0 1 1"/>
+  </material>
+  <material name="black">
+    <color rgba="0 0 0 1"/>
+  </material>
+  <material name="green">
+    <color rgba="0 1 0 1"/>
+  </material>
+  <material name="red">
+    <color rgba="1 0 0 1"/>
+  </material>
+
+  <!-- ===================== PARAMETERS ===================== -->
+  <xacro:property name="robot_length" value="0.25"/>
+  <xacro:property name="robot_width" value="0.17"/>
+  <xacro:property name="plank_height" value="0.015"/>
+  <xacro:property name="plank_spacing" value="0.04"/>
+  <xacro:property name="wheel_radius" value="0.035"/>
+  <xacro:property name="wheel_width" value="0.025"/>
+  <xacro:property name="rod_radius" value="0.005"/>
+  <xacro:property name="rod_height" value="0.04"/>
+  <xacro:property name="camera_mount_height" value="0.06"/>
+
+  <!-- ===================== BASE LINK (Origin at camera X,Y position, ground Z) ===================== -->
+  <link name="base_link"/>
+
+  <!-- ===================== ROBOT BODY (Bottom Plank) ===================== -->
+  <link name="robot_body">
+    <visual>
+      <geometry><box size="${robot_length} ${robot_width} ${plank_height}"/></geometry>
+      <material name="gray"/>
+    </visual>
+    <collision>
+      <geometry><box size="${robot_length} ${robot_width} ${plank_height}"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="1.5"/>
+      <inertia ixx="0.01" iyy="0.015" izz="0.02" ixy="0" ixz="0" iyz="0"/>
+      <origin xyz="0 0 0"/>
+    </inertial>
+  </link>
+
+  <joint name="base_to_body_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="robot_body"/>
+    <origin xyz="-0.10 0 0"/>
+  </joint>
+
+  <!-- ===================== TOP PLANK ===================== -->
+  <link name="top_plank">
+    <visual>
+      <geometry><box size="${robot_length} ${robot_width} ${plank_height}"/></geometry>
+      <material name="gray"/>
+    </visual>
+    <collision>
+      <geometry><box size="${robot_length} ${robot_width} ${plank_height}"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="1.5"/>
+      <inertia ixx="0.01" iyy="0.015" izz="0.02" ixy="0" ixz="0" iyz="0"/>
+      <origin xyz="0 0 0"/>
+    </inertial>
+  </link>
+
+  <joint name="top_plank_joint" type="fixed">
+    <parent link="robot_body"/>
+    <child link="top_plank"/>
+    <origin xyz="0 0 ${plank_spacing + plank_height}"/>
+  </joint>
+
+  <!-- ===================== CORNER RODS ===================== -->
+  <!-- Front Left Rod -->
+  <link name="rod_fl">
+    <visual>
+      <geometry><cylinder radius="${rod_radius}" length="${rod_height}"/></geometry>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <geometry><cylinder radius="${rod_radius}" length="${rod_height}"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="0.05"/>
+      <inertia ixx="0.00001" iyy="0.00001" izz="0.00001" ixy="0" ixz="0" iyz="0"/>
+    </inertial>
+  </link>
+  <joint name="rod_fl_joint" type="fixed">
+    <parent link="robot_body"/>
+    <child link="rod_fl"/>
+    <origin xyz="${robot_length/2 - 0.02} ${robot_width/2 - 0.02} ${plank_height/2 + rod_height/2}"/>
+  </joint>
+
+  <!-- Front Right Rod -->
+  <link name="rod_fr">
+    <visual>
+      <geometry><cylinder radius="${rod_radius}" length="${rod_height}"/></geometry>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <geometry><cylinder radius="${rod_radius}" length="${rod_height}"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="0.05"/>
+      <inertia ixx="0.00001" iyy="0.00001" izz="0.00001" ixy="0" ixz="0" iyz="0"/>
+    </inertial>
+  </link>
+  <joint name="rod_fr_joint" type="fixed">
+    <parent link="robot_body"/>
+    <child link="rod_fr"/>
+    <origin xyz="${robot_length/2 - 0.02} -${robot_width/2 - 0.02} ${plank_height/2 + rod_height/2}"/>
+  </joint>
+
+  <!-- Rear Left Rod -->
+  <link name="rod_rl">
+    <visual>
+      <geometry><cylinder radius="${rod_radius}" length="${rod_height}"/></geometry>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <geometry><cylinder radius="${rod_radius}" length="${rod_height}"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="0.05"/>
+      <inertia ixx="0.00001" iyy="0.00001" izz="0.00001" ixy="0" ixz="0" iyz="0"/>
+    </inertial>
+  </link>
+  <joint name="rod_rl_joint" type="fixed">
+    <parent link="robot_body"/>
+    <child link="rod_rl"/>
+    <origin xyz="-${robot_length/2 - 0.02} ${robot_width/2 - 0.02} ${plank_height/2 + rod_height/2}"/>
+  </joint>
+
+  <!-- Rear Right Rod -->
+  <link name="rod_rr">
+    <visual>
+      <geometry><cylinder radius="${rod_radius}" length="${rod_height}"/></geometry>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <geometry><cylinder radius="${rod_radius}" length="${rod_height}"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="0.05"/>
+      <inertia ixx="0.00001" iyy="0.00001" izz="0.00001" ixy="0" ixz="0" iyz="0"/>
+    </inertial>
+  </link>
+  <joint name="rod_rr_joint" type="fixed">
+    <parent link="robot_body"/>
+    <child link="rod_rr"/>
+    <origin xyz="-${robot_length/2 - 0.02} -${robot_width/2 - 0.02} ${plank_height/2 + rod_height/2}"/>
+  </joint>
+
+  <!-- ===================== CAMERA MOUNT ROD ===================== -->
+  <link name="camera_mount">
+    <visual>
+      <geometry><cylinder radius="${rod_radius}" length="${camera_mount_height}"/></geometry>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <geometry><cylinder radius="${rod_radius}" length="${camera_mount_height}"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="0.05"/>
+      <inertia ixx="0.00001" iyy="0.00001" izz="0.00001" ixy="0" ixz="0" iyz="0"/>
+    </inertial>
+  </link>
+  <joint name="camera_mount_joint" type="fixed">
+    <parent link="top_plank"/>
+    <child link="camera_mount"/>
+    <origin xyz="0.10 0 ${plank_height/2 + camera_mount_height/2}"/>
+  </joint>
+
+  <!-- ===================== CAMERA LINK ===================== -->
+  <link name="camera_link">
+    <visual>
+      <geometry><box size="0.04 0.04 0.04"/></geometry>
+      <material name="blue"/>
+    </visual>
+    <collision>
+      <geometry><box size="0.04 0.04 0.04"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="0.1"/>
+      <origin xyz="0 0 0"/>
+      <inertia ixx="0.00001" ixy="0.0" ixz="0.0" 
+               iyy="0.00001" iyz="0.0" 
+               izz="0.00001"/>
+    </inertial>
+  </link>
+
+  <!-- Revolute joint for camera oscillation (improves feature tracking, not depth) -->
+  <joint name="camera_pan_joint" type="continuous">
+    <parent link="camera_mount"/>
+    <child link="camera_link"/>
+    <origin xyz="0 0 ${camera_mount_height/2 + 0.02}"/>
+    <axis xyz="0 0 1"/>
+    <dynamics damping="0.01" friction="0.0"/>
+  </joint>
+
+  <!-- Camera optical frame (ROS convention: Z forward, X right, Y down) -->
+  <link name="camera_link_optical"/>
+  
+  <joint name="camera_optical_joint" type="fixed">
+    <parent link="camera_link"/>
+    <child link="camera_link_optical"/>
+    <!-- Rotate from camera_link (Z up) to optical frame (Z forward) -->
+    <origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}"/>
+  </joint>
+
+  <!-- ===================== IMU LINK ===================== -->
+  <link name="imu_link">
+    <visual>
+      <geometry><box size="0.02 0.02 0.02"/></geometry>
+      <material name="green"/>
+    </visual>
+  </link>
+
+  <joint name="imu_joint" type="fixed">
+    <parent link="robot_body"/>
+    <child link="imu_link"/>
+    <origin xyz="0.10 0 ${plank_height/2 + 0.01}"/>
+  </joint>
+
+  <!-- ===================== WHEELS ===================== -->
+  <!-- Front Left -->
+  <link name="wheel_fl">
+    <visual>
+      <geometry><cylinder radius="${wheel_radius}" length="${wheel_width}"/></geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <geometry><cylinder radius="${wheel_radius}" length="${wheel_width}"/></geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="0.1"/>
+      <inertia ixx="0.0001" iyy="0.0001" izz="0.0001" ixy="0" ixz="0" iyz="0"/>
+    </inertial>
+  </link>
+  <joint name="joint_wheel_fl" type="continuous">
+    <parent link="robot_body"/>
+    <child link="wheel_fl"/>
+    <origin xyz="0.08 ${robot_width/2 + wheel_width/2} 0" rpy="-1.5707 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <!-- Rear Left -->
+  <link name="wheel_rl">
+    <visual>
+      <geometry><cylinder radius="${wheel_radius}" length="${wheel_width}"/></geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <geometry><cylinder radius="${wheel_radius}" length="${wheel_width}"/></geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="0.1"/>
+      <inertia ixx="0.0001" iyy="0.0001" izz="0.0001" ixy="0" ixz="0" iyz="0"/>
+    </inertial>
+  </link>
+  <joint name="joint_wheel_rl" type="continuous">
+    <parent link="robot_body"/>
+    <child link="wheel_rl"/>
+    <origin xyz="-0.08 ${robot_width/2 + wheel_width/2} 0" rpy="-1.5707 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <!-- Front Right -->
+  <link name="wheel_fr">
+    <visual>
+      <geometry><cylinder radius="${wheel_radius}" length="${wheel_width}"/></geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <geometry><cylinder radius="${wheel_radius}" length="${wheel_width}"/></geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="0.1"/>
+      <inertia ixx="0.0001" iyy="0.0001" izz="0.0001" ixy="0" ixz="0" iyz="0"/>
+    </inertial>
+  </link>
+  <joint name="joint_wheel_fr" type="continuous">
+    <parent link="robot_body"/>
+    <child link="wheel_fr"/>
+    <origin xyz="0.08 -${robot_width/2 + wheel_width/2} 0" rpy="-1.5707 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <!-- Rear Right -->
+  <link name="wheel_rr">
+    <visual>
+      <geometry><cylinder radius="${wheel_radius}" length="${wheel_width}"/></geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <geometry><cylinder radius="${wheel_radius}" length="${wheel_width}"/></geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="0.1"/>
+      <inertia ixx="0.0001" iyy="0.0001" izz="0.0001" ixy="0" ixz="0" iyz="0"/>
+    </inertial>
+  </link>
+  <joint name="joint_wheel_rr" type="continuous">
+    <parent link="robot_body"/>
+    <child link="wheel_rr"/>
+    <origin xyz="-0.08 -${robot_width/2 + wheel_width/2} 0" rpy="-1.5707 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <!-- ===================== GAZEBO COLORS ===================== -->
+  <gazebo reference="robot_body">
+    <material>Gazebo/Grey</material>
+  </gazebo>
+  <gazebo reference="top_plank">
+    <material>Gazebo/Grey</material>
+  </gazebo>
+  <gazebo reference="rod_fl">
+    <material>Gazebo/Black</material>
+  </gazebo>
+  <gazebo reference="rod_fr">
+    <material>Gazebo/Black</material>
+  </gazebo>
+  <gazebo reference="rod_rl">
+    <material>Gazebo/Black</material>
+  </gazebo>
+  <gazebo reference="rod_rr">
+    <material>Gazebo/Black</material>
+  </gazebo>
+  <gazebo reference="camera_mount">
+    <material>Gazebo/Black</material>
+  </gazebo>
+  <gazebo reference="wheel_fl">
+    <material>Gazebo/Black</material>
+    <mu1>1.0</mu1>
+    <mu2>1.0</mu2>
+    <kp>1000000.0</kp>
+    <kd>100.0</kd>
+    <minDepth>0.001</minDepth>
+    <maxVel>1.0</maxVel>
+  </gazebo>
+  <gazebo reference="wheel_rl">
+    <material>Gazebo/Black</material>
+    <mu1>0.1</mu1>
+    <mu2>0.1</mu2>
+    <kp>1000000.0</kp>
+    <kd>100.0</kd>
+    <minDepth>0.001</minDepth>
+    <maxVel>1.0</maxVel>
+  </gazebo>
+  <gazebo reference="wheel_fr">
+    <material>Gazebo/Black</material>
+    <mu1>1.0</mu1>
+    <mu2>1.0</mu2>
+    <kp>1000000.0</kp>
+    <kd>100.0</kd>
+    <minDepth>0.001</minDepth>
+    <maxVel>1.0</maxVel>
+  </gazebo>
+  <gazebo reference="wheel_rr">
+    <material>Gazebo/Black</material>
+    <mu1>0.1</mu1>
+    <mu2>0.1</mu2>
+    <kp>1000000.0</kp>
+    <kd>100.0</kd>
+    <minDepth>0.001</minDepth>
+    <maxVel>1.0</maxVel>
+  </gazebo>
+  <gazebo reference="camera_link">
+    <material>Gazebo/Blue</material>
+  </gazebo>
+  <gazebo reference="imu_link">
+    <material>Gazebo/Green</material>
+  </gazebo>
+
+  <!-- ===================== GAZEBO PLUGINS ===================== -->
+
+
+  <!-- Differential Drive (using front wheels) -->
+  <gazebo>
+    <plugin name="diff_drive" filename="libgazebo_ros_diff_drive.so">
+      <update_rate>50</update_rate>
+      
+      <!-- Wheel joints -->
+      <left_joint>joint_wheel_fl</left_joint>
+      <right_joint>joint_wheel_fr</right_joint>
+      
+      <!-- Kinematics -->
+      <wheel_separation>0.195</wheel_separation>
+      <wheel_diameter>0.07</wheel_diameter>
+      
+      <!-- Limits -->
+      <max_wheel_torque>20</max_wheel_torque>
+      <max_wheel_acceleration>1.0</max_wheel_acceleration>
+      
+      <!-- Output -->
+      <publish_odom>true</publish_odom>
+      <publish_odom_tf>true</publish_odom_tf>
+      <publish_wheel_tf>true</publish_wheel_tf>
+      
+      <odometry_frame>odom</odometry_frame>
+      <robot_base_frame>base_link</robot_base_frame>
+      
+      <!-- ROS 2 topics -->
+      <ros>
+        <namespace>/</namespace>
+        <remapping>cmd_vel:=cmd_vel</remapping>
+        <remapping>odom:=odom</remapping>
+      </ros>
+    </plugin>
+  </gazebo>
+
+  <!-- IMU Plugin -->
+  <gazebo reference="imu_link">
+    <sensor name="imu_sensor" type="imu">
+      <always_on>true</always_on>
+      <update_rate>100</update_rate>
+      <imu>
+        <angular_velocity>
+          <x>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>2e-4</stddev>
+            </noise>
+          </x>
+          <y>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>2e-4</stddev>
+            </noise>
+          </y>
+          <z>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>2e-4</stddev>
+            </noise>
+          </z>
+        </angular_velocity>
+        <linear_acceleration>
+          <x>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>1.7e-2</stddev>
+            </noise>
+          </x>
+          <y>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>1.7e-2</stddev>
+            </noise>
+          </y>
+          <z>
+            <noise type="gaussian">
+              <mean>0.0</mean>
+              <stddev>1.7e-2</stddev>
+            </noise>
+          </z>
+        </linear_acceleration>
+      </imu>
+      <plugin name="imu_plugin" filename="libgazebo_ros_imu_sensor.so">
+        <ros>
+          <namespace>/</namespace>
+          <remapping>~/out:=imu/data</remapping>
+        </ros>
+        <initial_orientation_as_reference>false</initial_orientation_as_reference>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+  <!-- Camera Plugin -->
+  <gazebo reference="camera_link">
+    <sensor type="camera" name="camera_sensor">
+      <update_rate>20</update_rate>
+      <camera>
+        <horizontal_fov>1.05</horizontal_fov>
+        <image>
+          <width>640</width>
+          <height>480</height>
+          <format>R8G8B8</format>
+        </image>
+      </camera>
+      <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+        <ros>
+          <namespace>/</namespace>
+          <remapping>image_raw:=camera_sensor/image_raw</remapping>
+          <remapping>camera_info:=camera_sensor/camera_info</remapping>
+        </ros>
+        <frame_name>camera_link_optical</frame_name>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+  <!-- ===================== CAMERA JOINT CONTROL ===================== -->
+  <!-- Joint State Publisher -->
+  <gazebo>
+    <plugin name="gazebo_ros_joint_state_publisher" filename="libgazebo_ros_joint_state_publisher.so">
+      <update_rate>50</update_rate>
+      <joint_name>camera_pan_joint</joint_name>
+      <joint_name>joint_wheel_fl</joint_name>
+      <joint_name>joint_wheel_fr</joint_name>
+      <joint_name>joint_wheel_rl</joint_name>
+      <joint_name>joint_wheel_rr</joint_name>
+    </plugin>
+  </gazebo>
+  
+  <!-- Camera joint position control -->
+  <gazebo>
+    <plugin name="camera_joint_control" filename="libgazebo_ros_joint_pose_trajectory.so">
+      <update_rate>50</update_rate>
+      <ros>
+        <namespace>/</namespace>
+      </ros>
+    </plugin>
+  </gazebo>
+
+
+
+</robot>
