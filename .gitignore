@@ -42,10 +42,7 @@ Makefile
 *.log
 *.bag
 *.db3
-
-# TF/Graph visualization files
-*.gv
-*.pdf
+*.tex
 
 # Temporary files
 *.tmp

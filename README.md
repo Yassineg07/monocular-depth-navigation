@@ -23,6 +23,11 @@ No expensive sensors required!
 
 ## 🏗️ System Architecture
 
+At a glance:
+- Camera → ground-edge detection → `/ground_edge_scan` → Nav2 costmaps → planner/controller → `/cmd_vel`
+- Nav2 plugins used: `RegulatedPurePursuitController` (local controller) + `SmacPlannerHybrid` (global planner)
+- Nav2 config: [ros2_ws/src/my_robot/config/nav2_local_params.yaml](ros2_ws/src/my_robot/config/nav2_local_params.yaml)
+
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
 │                         GAZEBO SIMULATION                           │
@@ -52,7 +57,8 @@ No expensive sensors required!
           │  ─────────────────────  │
           │  • Global planner       │
           │  • Local costmap        │
-          │  • DWB controller       │
+          │  • Regulated Pure       │
+          │     Pursuit controller  │
           │  → /cmd_vel             │
           └─────────────────────────┘
                         │
@@ -158,17 +164,27 @@ ros2 launch my_robot simple_maze.launch.py
 
 # Terminal 2: Perception + Navigation (combined)
 ros2 launch my_robot depth_nav.launch.py
-```
 
-### Optional: Visualization and Control
-
-```bash
 # Terminal 3: RViz visualization
 ros2 launch my_robot rviz.launch.py
 
-# Terminal 4: GUI Teleoperation
+# Terminal 4: GUI Teleoperation (optional)
 ros2 run my_robot teleop_gui.py
 ```
+---
+
+## 🔎 Key Files (Where Things Live)
+
+- Combined launch (perception + Nav2): [ros2_ws/src/my_robot/launch/depth_nav.launch.py](ros2_ws/src/my_robot/launch/depth_nav.launch.py)
+- Nav2 bringup + servers: [ros2_ws/src/my_robot/launch/nav2_local.launch.py](ros2_ws/src/my_robot/launch/nav2_local.launch.py)
+- Nav2 parameters (planner/controller/costmaps/BT): [ros2_ws/src/my_robot/config/nav2_local_params.yaml](ros2_ws/src/my_robot/config/nav2_local_params.yaml)
+- Ground-edge perception node (C++): [ros2_ws/src/mono_depth_perception/src/ground_edge_node.cpp](ros2_ws/src/mono_depth_perception/src/ground_edge_node.cpp)
+- Ground-edge launch + params: [ros2_ws/src/mono_depth_perception/launch/ground_edge.launch.py](ros2_ws/src/mono_depth_perception/launch/ground_edge.launch.py), [ros2_ws/src/mono_depth_perception/config/ground_edge_params.yaml](ros2_ws/src/mono_depth_perception/config/ground_edge_params.yaml)
+- RViz launch: [ros2_ws/src/my_robot/launch/rviz.launch.py](ros2_ws/src/my_robot/launch/rviz.launch.py)
+- GUI teleop: [ros2_ws/src/my_robot/src/teleop_gui.py](ros2_ws/src/my_robot/src/teleop_gui.py)
+- Static map publisher + map tools: [ros2_ws/src/my_robot/scripts/static_map_publisher.py](ros2_ws/src/my_robot/scripts/static_map_publisher.py), [ros2_ws/src/my_robot/scripts/create_map.py](ros2_ws/src/my_robot/scripts/create_map.py), [ros2_ws/src/my_robot/scripts/create_simple_maze_map.py](ros2_ws/src/my_robot/scripts/create_simple_maze_map.py)
+- TF tree (generated): [ros2_ws/frames_2026-01-01_15.33.37.pdf](ros2_ws/frames_2026-01-01_15.33.37.pdf)
+- Node graph (nodes-only): [ros2_ws/nodes_graph.png](ros2_ws/nodes_graph.png)
 
 ---
 
@@ -328,9 +344,10 @@ ground_edge_node:
 ### Nav2 Parameters
 
 Key settings in `my_robot/config/nav2_local_params.yaml`:
-- DWB controller with obstacle avoidance
-- Rolling costmap (local navigation)
-- Custom behavior tree for recovery behaviors
+- Local controller: `RegulatedPurePursuitController` (FollowPath)
+- Global planner: `SmacPlannerHybrid` (Hybrid-A*)
+- Local + global costmaps: obstacle + inflation layers (obstacle source: `/ground_edge_scan`)
+- BT Navigator: behavior-tree-driven navigation + recovery behaviors
 
 ---
 
