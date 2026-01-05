@@ -336,6 +336,12 @@ ros2 lifecycle get /planner_server
 - Check that obstacles touch the ground
 - Ensure sufficient lighting contrast
 
+### Do obstacles stay during a run?
+- During a run, Nav2 keeps a **live obstacle grid** (costmap).
+- In this project, the **global costmap DOES keep the obstacles** while Nav2 is running.
+- The **local costmap CLEAR obstacles** as the sensor updates.
+- Restarting Nav2 RESETS the costmaps (nothing is saved to disk).
+
 ### Robot moves too slow / fast
 **Fix:** Adjust in `nav2_local_params.yaml`:
 ```yaml

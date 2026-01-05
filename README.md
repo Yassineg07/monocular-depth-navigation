@@ -375,6 +375,12 @@ ros2 launch my_robot simple_maze.launch.py
 - Verify camera sees ground-wall transitions
 - Adjust `min_edge_strength` for different lighting
 
+### Do obstacles stay during a run?
+- During a run, Nav2 maintains a **live obstacle grid** (costmap).
+- In this project, the **global costmap keeps obstacles** while Nav2 is running (so they usually don’t disappear).
+- The **local costmap updates faster** and can clear obstacles as the sensor updates.
+- Nothing is saved to disk (doesn't create a map): restarting Nav2 resets the costmaps.
+
 ### Robot doesn't move to goal
 - Ensure all nodes are running (simulation, perception, Nav2)
 - Check TF tree: `ros2 run tf2_tools view_frames`
