@@ -7,7 +7,23 @@ This guide provides detailed step-by-step instructions for running the monocular
 ## 📋 Prerequisites
 
 Before running, ensure you have:
-1. Built the workspace successfully
+1. Ubuntu 22.04 + ROS2 Humble + required packages installed
+
+```bash
+sudo apt update
+sudo apt install -y \
+  ros-humble-desktop \
+  ros-humble-gazebo-ros-pkgs \
+  ros-humble-rtabmap-ros \
+  ros-humble-rtabmap-slam \
+  ros-humble-robot-state-publisher \
+  ros-humble-xacro \
+  ros-humble-nav2-bringup \
+  ros-humble-navigation2 \
+  ros-humble-tf2-tools
+```
+
+2. Built the workspace successfully
 
 ```bash
 cd ~/monocular-depth-navigation/ros2_ws
@@ -16,7 +32,6 @@ colcon build --symlink-install
 source install/setup.bash
 ```
 
-2. All dependencies installed (see README.md)
 3. Sourced the ROS2 environment
 
 ```bash
@@ -59,6 +74,11 @@ This single command starts:
 - Lifecycle manager
 
 **Wait for:** "Lifecycle nodes are active" or "Creating bond timer.." message.
+
+Files involved:
+- Combined launch: [ros2_ws/src/my_robot/launch/depth_nav.launch.py](ros2_ws/src/my_robot/launch/depth_nav.launch.py)
+- Nav2 parameters: [ros2_ws/src/my_robot/config/nav2_local_params.yaml](ros2_ws/src/my_robot/config/nav2_local_params.yaml)
+- Ground-edge parameters: [ros2_ws/src/mono_depth_perception/config/ground_edge_params.yaml](ros2_ws/src/mono_depth_perception/config/ground_edge_params.yaml)
 
 ### Terminal 3: Visualization
 ```bash
@@ -178,6 +198,10 @@ ros2 action send_goal /navigate_to_pose nav2_msgs/action/NavigateToPose \
 
 ## 🗺️ Creating Maps
 
+This section is **optional**.
+
+The generated occupancy grid is mainly for **RViz visual reference / easier goal placement**. Nav2 in this project does **not** rely on a saved map to navigate.
+
 ### Step 1: Generate a Maze World
 
 ```bash
@@ -195,7 +219,7 @@ python3 generate_colorful_world.py
 
 ### Step 2: Create Occupancy Grid Map
 
-After generating the world file, create a map for Nav2:
+After generating the world file, you can create an occupancy grid image for RViz:
 
 ```bash
 cd ~/monocular-depth-navigation/ros2_ws/src/my_robot/scripts
@@ -210,6 +234,10 @@ convert ~/monocular-depth-navigation/ros2_ws/src/my_robot/maps/world_reference.p
 # Remove the PGM file (not needed)
 rm ~/monocular-depth-navigation/ros2_ws/src/my_robot/maps/world_reference.pgm
 ```
+
+Related files:
+- Map scripts: [ros2_ws/src/my_robot/scripts](ros2_ws/src/my_robot/scripts)
+- Static map publisher: [ros2_ws/src/my_robot/scripts/static_map_publisher.py](ros2_ws/src/my_robot/scripts/static_map_publisher.py)
 
 > **Important:** Always save as `world_reference.png` — the RViz display and `static_map_publisher.py` are configured to use this filename.
 
@@ -335,12 +363,6 @@ ros2 lifecycle get /planner_server
 - Verify `/ground_edge_scan` is publishing: `ros2 topic echo /ground_edge_scan`
 - Check that obstacles touch the ground
 - Ensure sufficient lighting contrast
-
-### Do obstacles stay during a run?
-- During a run, Nav2 keeps a **live obstacle grid** (costmap).
-- In this project, the **global costmap DOES keep the obstacles** while Nav2 is running.
-- The **local costmap CLEAR obstacles** as the sensor updates.
-- Restarting Nav2 RESETS the costmaps (nothing is saved to disk).
 
 ### Robot moves too slow / fast
 **Fix:** Adjust in `nav2_local_params.yaml`:
