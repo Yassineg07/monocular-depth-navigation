@@ -8,6 +8,7 @@
 This project demonstrates that a robot can navigate complex environments using computer vision techniques applied to a single camera feed. The robot detects obstacles by analyzing ground-to-wall transitions in the camera image and uses Nav2 for path planning and obstacle avoidance.
 
 [![Demo Video](https://img.youtube.com/vi/ioWUWzyHvF8/maxresdefault.jpg)](https://youtu.be/ioWUWzyHvF8)
+
 ---
 
 ## 🎯 Project Goal
