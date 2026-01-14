@@ -1,6 +1,7 @@
 # Monocular Depth Navigation
 
 [![ROS2](https://img.shields.io/badge/ROS2-Humble-blue)](https://docs.ros.org/en/humble/)
+[![Nav2](https://img.shields.io/badge/Nav2-Smac_Hybrid_Planner-green)](https://docs.nav2.org/configuration/packages/smac/configuring-smac-hybrid.html)
 [![Gazebo](https://img.shields.io/badge/Gazebo-Classic-orange)](http://gazebosim.org/)
 
 **Autonomous robot navigation using only a monocular RGB camera**. No LiDAR, no depth sensor, no AI and no map.
@@ -76,7 +77,7 @@ At a glance:
 │                         GAZEBO SIMULATION                           │
 │   Robot with Camera (640×480) + IMU + Differential Drive            │
 │   (Provides ground-truth odometry via diff_drive plugin)            │
-└─────────────────────────────────────────────────────────────────────┘
+└─────────────────────────────────┬───────────────────────────────────┘
                                   │
               ┌───────────────────┼───────────────────┐
               ▼                   ▼                   ▼
@@ -88,25 +89,26 @@ At a glance:
    │ • Loop closure  │  │   geometry      │  │ → Occupancy grid    │
    │ → /odom, /tf    │  │ → /ground_edge_ │  └─────────────────────┘
    │                 │  │   scan          │
-   │ (Real robot     │  └─────────────────┘
+   │ (Real robot     │  └─────────┬───────┘
    │  only - not     │            │
    │  needed in sim) │            │
-   └─────────────────┘            │
+   └──────────┬──────┘            │
               │                   │
               └─────────┬─────────┘
                         ▼
-          ┌─────────────────────────┐
-          │         NAV2            │
-          │  ─────────────────────  │
-          │  • Global planner       │
-          │  • Local costmap        │
-          │  • Regulated Pure       │
-          │     Pursuit controller  │
-          │  → /cmd_vel             │
-          └─────────────────────────┘
-                        │
+           ┌─────────────────────────┐
+           │           NAV2          │
+           │  ─────────────────────  |
+           │  • Costmaps (obstacles) |
+           │  • Global planner:      |
+           |     Smac Planner Hybrid │
+           │  • Local planner:       │
+           │     Regulated Pure      │
+           │      Pursuit controller │
+           │  → /cmd_vel             │
+           └────────────┬────────────┘
                         ▼
-                 Robot Motion
+                  Robot Motion
 ```
 
 ### Simulation vs Real Robot
